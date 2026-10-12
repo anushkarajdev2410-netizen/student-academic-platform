@@ -19,16 +19,22 @@ pipeline {
             }
         }
 
-        stage('3. Unit Test') {
-            steps {
-                sh '. .venv/bin/activate && pytest -v --junitxml=pytest-report.xml --cov=app --cov-report=term'
-            }
-            post {
-                always {
-                    junit allowEmptyResults: true, testResults: 'pytest-report.xml'
-                }
-            }
+        
+stage('3. Unit Test') {
+    steps {
+        sh '''
+            . .venv/bin/activate
+            export PYTHONPATH="$WORKSPACE"
+            python -m pytest -v --junitxml=pytest-report.xml --cov=app --cov-report=term
+        '''
+    }
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: 'pytest-report.xml'
         }
+    }
+}
+
 
         stage('4. Package') {
             steps {
